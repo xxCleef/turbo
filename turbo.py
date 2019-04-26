@@ -4,9 +4,11 @@ import threading
 import time
 import sys
 import random
+from urllib3 import ProxyManager, make_headers
 
 
-c = " "
+
+c = 0
 
 with open("config.json") as file:
     config = json.load(file)
@@ -17,6 +19,11 @@ password = config['password']
 targets = config['targetUsernames']
 
 endpoint = "https://instagram.com/<username>"
+
+
+proxies = {
+  'https': 'http://104.131.116.184:3128',
+}
 
 def turbo(nam):
 
@@ -95,13 +102,13 @@ def turbo(nam):
             print(f'[{nam}] Completed Turbo Killing Thread')
             turboin = False
         else:
-
+            global c
+            c = c+1
             print("({}) [{}] Name Unavailable <{}>".format(str(c), nam, res.status_code))
             print("")
             if res.status_code == 429:
-            	print("You've been spam blocked!")
-            	sys.exit()
-
+                print("You've been spam blocked!")
+                res = requests.get(endpoint.replace("<username>", nam),proxies=proxies)
 if __name__ == '__main__':
     print("turbo is ready")
     tin = input("Would you like to start (y/n)?: ")
